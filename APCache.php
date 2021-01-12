@@ -106,7 +106,7 @@ class APCache {
 		if(!AP_CACHE)
 			return false;
 
-		$filename = self::get_dir( $dirName ) . md5( $key ) . 'txt';
+		$filename = self::get_dir( $dirName ) . md5( $key ) . '.txt';
 
 		if ( file_exists( $filename ) ) {
 			unlink( $filename );
