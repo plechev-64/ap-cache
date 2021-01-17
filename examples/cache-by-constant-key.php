@@ -19,5 +19,5 @@ echo $content;
  * Delete file of cache by key
  * */
 add_action('any-action-hook', function(){
-	APCache::delete_file( 'cache-key-example' );
+	APCache::delete( 'cache-key-example' );
 });

@@ -1,6 +1,6 @@
 <?php
 
-define('AP_CACHE', true);
+define( 'AP_CACHE', true );
 
 class APCache {
 
@@ -11,7 +11,12 @@ class APCache {
 	public $filepath;
 	public $cachepath;
 
-	function __construct( $key, $timecache = 86400, $dirName = '' ) {
+	function __construct( $key, $timecache = 86400, $args = [] ) {
+
+		if ( $args ) {
+			$dirName = $key;
+			$key     = json_encode( $args );
+		}
 
 		$this->key_hash = md5( $key );
 
@@ -33,23 +38,27 @@ class APCache {
 	}
 
 	function file_exists() {
-		if(!AP_CACHE)
+		if ( ! AP_CACHE ) {
 			return false;
+		}
+
 		return file_exists( $this->filepath ) ? true : false;
 	}
 
 	function need_update() {
 
-		if(!$this->time_cache)
+		if ( ! $this->time_cache ) {
 			return false;
+		}
 
 		return ( filemtime( $this->filepath ) + $this->time_cache < time() ) ? true : false;
 	}
 
 	function get() {
 
-		if(!AP_CACHE)
+		if ( ! AP_CACHE ) {
 			return false;
+		}
 
 		if ( ! $this->file_exists() ) {
 			return false;
@@ -60,8 +69,9 @@ class APCache {
 
 	function update( $content ) {
 
-		if(!AP_CACHE)
+		if ( ! AP_CACHE ) {
 			return false;
+		}
 
 		if ( ! file_exists( $this->cachepath ) ) {
 
@@ -81,6 +91,28 @@ class APCache {
 		return $content;
 	}
 
+	static function delete( $key ) {
+
+		if ( ! AP_CACHE ) {
+			return false;
+		}
+
+		$filename = self::get_dir() . md5( $key ) . '.txt';
+
+		if ( file_exists( $filename ) ) {
+			unlink( $filename );
+		}else{
+
+			$filename = self::get_dir($key);
+
+			if(file_exists( $filename )){
+				self::remove_dir( $filename );
+			}
+
+		}
+
+	}
+
 	static function get_dir( $dirName = '' ) {
 
 		$cachepath = wp_upload_dir()['path'] . '/ap-caсhe/';
@@ -94,8 +126,9 @@ class APCache {
 
 	static function clear( $dirName = '' ) {
 
-		if(!AP_CACHE)
+		if ( ! AP_CACHE ) {
 			return false;
+		}
 
 		self::remove_dir( self::get_dir( $dirName ) );
 
@@ -103,8 +136,9 @@ class APCache {
 
 	static function delete_file( $key, $dirName = '' ) {
 
-		if(!AP_CACHE)
+		if ( ! AP_CACHE ) {
 			return false;
+		}
 
 		$filename = self::get_dir( $dirName ) . md5( $key ) . '.txt';
 
